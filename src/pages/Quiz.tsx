@@ -176,7 +176,7 @@ export default function Quiz() {
     unlockNextLevel(levelId)
 
     // Level Complete celebration: start after a short delay (~400ms)
-    const celebrationTimer = setTimeout(() => {
+    setTimeout(() => {
       const confettiCount = 24
       const sparkleCount = 10
       const noteCount = 10
