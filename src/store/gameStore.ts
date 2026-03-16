@@ -1,4 +1,5 @@
 import { LEVELS } from '@/data/levels'
+import { getLevelPathPoints } from '@/utils/levelMapPath'
 
 const STORAGE_KEY = 'pixel-guess-state'
 const LEVEL_ORDER = LEVELS.map((l) => l.id)
@@ -13,19 +14,18 @@ export interface GameState {
   levelNodePositions: Record<string, { x: number; y: number }>
 }
 
-/** 按当前视图保存的关卡节点位置（0~1 相对容器），来自拖拽结果 */
-const defaultLevelNodePositions: Record<string, { x: number; y: number }> = {
-  '1': { x: 0.72, y: 0.72 },
-  '2': { x: 0.86, y: 0.512 },
-  '3': { x: 0.147, y: 0.474 },
-  '4': { x: 0.112, y: 0.409 },
-  '5': { x: 0.176, y: 0.363},
-  '6': { x: 0.243, y: 0.323 },
-  '7': { x: 0.273, y: 0.261},
-  '8': { x: 0.328, y: 0.209 },
-  '9': { x: 0.287, y: 0.156 },
-  '10': { x: 0.248, y: 0.88 },
-}
+/**
+ * 默认关卡节点位置：沿着关卡选择页背景图中的 S 形马路自动生成。
+ * 使用 `getLevelPathPoints` 基于贝塞尔曲线按关卡数量等距采样，保证 1-10 始终贴合道路走向。
+ */
+const defaultPathPoints = getLevelPathPoints(LEVELS.length)
+const defaultLevelNodePositions: Record<string, { x: number; y: number }> = LEVELS.reduce(
+  (acc, level, index) => {
+    acc[level.id] = defaultPathPoints[index]
+    return acc
+  },
+  {} as Record<string, { x: number; y: number }>
+)
 
 const defaultState: GameState = {
   unlockedLevelIds: ['1'],
