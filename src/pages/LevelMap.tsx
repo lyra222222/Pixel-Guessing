@@ -149,7 +149,7 @@ function PixelCircleNode({
             cx="28"
             cy="28"
             r="24"
-            fill="rgba(15,15,42,0.85)"
+            fill="rgba(0,0,0,0.9)"
             stroke={`url(#eq-${levelId})`}
             strokeWidth="3"
             filter={isLocked ? undefined : `url(#glow-${levelId})`}
