@@ -1,0 +1,316 @@
+/* ============================================
+   PIXEL GUESS — 16-bit Pixel Art Design System
+   ============================================ */
+
+/* Pixel Button Base */
+.pixel-btn {
+  border: 3px solid currentColor;
+  box-shadow: 4px 4px 0 #000;
+  cursor: pointer;
+  transition: transform 0.08s, box-shadow 0.08s;
+  image-rendering: pixelated;
+  position: relative;
+}
+
+.pixel-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 #000;
+}
+
+.pixel-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 #000;
+}
+
+/* Pixel border utility */
+.pixel-border {
+  border: 3px solid #00ffff;
+  box-shadow: 4px 4px 0 #000;
+}
+
+.pixel-border-pink {
+  border: 3px solid #ff00ff;
+  box-shadow: 4px 4px 0 #000;
+}
+
+.pixel-border-yellow {
+  border: 3px solid #ffff00;
+  box-shadow: 4px 4px 0 #000;
+}
+
+/* Neon glow effects */
+.neon-cyan {
+  box-shadow: 0 0 8px #00ffff, 0 0 16px #00ffff40, 4px 4px 0 #000;
+}
+
+.neon-pink {
+  box-shadow: 0 0 8px #ff00ff, 0 0 16px #ff00ff40, 4px 4px 0 #000;
+}
+
+.neon-green {
+  box-shadow: 0 0 8px #00ff88, 0 0 16px #00ff8840, 4px 4px 0 #000;
+}
+
+.neon-yellow {
+  box-shadow: 0 0 8px #ffff00, 0 0 16px #ffff0040, 4px 4px 0 #000;
+}
+
+/* Pixel image rendering */
+.pixel-img {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* Scanlines overlay */
+.scanlines {
+  position: relative;
+}
+.scanlines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0, 0, 0, 0.08) 3px,
+    rgba(0, 0, 0, 0.08) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Blinking cursor animation */
+@keyframes pixel-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.pixel-cursor::after {
+  content: '_';
+  animation: pixel-blink 1s step-end infinite;
+  color: #00ffff;
+}
+
+/* Vinyl spinning */
+@keyframes spin-vinyl {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin-vinyl {
+  animation: spin-vinyl 4s linear infinite;
+}
+
+/* Pixel underline animation */
+@keyframes pixel-underline {
+  0% { width: 0; }
+  100% { width: 100%; }
+}
+
+/* Neon pulse */
+@keyframes neon-pulse {
+  0%, 100% { box-shadow: 0 0 8px #00ffff, 0 0 16px #00ffff40, 4px 4px 0 #000; }
+  50% { box-shadow: 0 0 16px #00ffff, 0 0 32px #00ffff80, 4px 4px 0 #000; }
+}
+
+.neon-pulse {
+  animation: neon-pulse 2s ease-in-out infinite;
+}
+
+/* Pink pulse */
+@keyframes pink-pulse {
+  0%, 100% { box-shadow: 0 0 8px #ff00ff, 0 0 16px #ff00ff40, 4px 4px 0 #000; }
+  50% { box-shadow: 0 0 20px #ff00ff, 0 0 40px #ff00ff80, 4px 4px 0 #000; }
+}
+
+.pink-pulse {
+  animation: pink-pulse 1.5s ease-in-out infinite;
+}
+
+/* Shake animation for wrong answer */
+@keyframes pixel-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+.pixel-shake {
+  animation: pixel-shake 0.4s ease-in-out;
+}
+
+/* Success flash */
+@keyframes success-flash {
+  0% { opacity: 0; transform: scale(0.5); }
+  50% { opacity: 1; transform: scale(1.1); }
+  100% { opacity: 0; transform: scale(1.2); }
+}
+
+.success-flash {
+  animation: success-flash 0.8s ease-out forwards;
+}
+
+/* Floating stars */
+@keyframes float-up {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(-80px) rotate(180deg); opacity: 0; }
+}
+
+/* CRT flicker */
+@keyframes crt-flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.97; }
+  52% { opacity: 1; }
+  98% { opacity: 0.98; }
+}
+
+.crt-flicker {
+  animation: crt-flicker 4s infinite;
+}
+
+/* Pixel panel */
+.pixel-panel {
+  background: #1a1a4e;
+  border: 3px solid #2a2a6e;
+  box-shadow: 4px 4px 0 #000;
+}
+
+/* Circle override for vinyl records */
+.pixel-circle {
+  border-radius: 50% !important;
+}
+
+/* Score badge */
+.score-badge {
+  background: #0d0d2b;
+  border: 3px solid #ffff00;
+  box-shadow: 3px 3px 0 #000, 0 0 8px #ffff0060;
+  color: #ffff00;
+}
+
+/* Hint capsule states */
+.hint-capsule-artist {
+  background: #2d0033;
+  border: 3px solid #ff00ff;
+  box-shadow: 3px 3px 0 #000;
+  color: #ff00ff;
+}
+
+.hint-capsule-length {
+  background: #003333;
+  border: 3px solid #00ffff;
+  box-shadow: 3px 3px 0 #000;
+  color: #00ffff;
+}
+
+.hint-capsule-firstchar {
+  background: #333300;
+  border: 3px solid #ffff00;
+  box-shadow: 3px 3px 0 #000;
+  color: #ffff00;
+}
+
+/* Celebration modal overlay */
+@keyframes modal-in {
+  0% { transform: scale(0.5) translateY(30px); opacity: 0; }
+  70% { transform: scale(1.05) translateY(-5px); opacity: 1; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.modal-in {
+  animation: modal-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Stars burst */
+@keyframes star-burst {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+}
+
+/* Level complete banner */
+@keyframes slide-down {
+  0% { transform: translateY(-60px); opacity: 0; }
+  20% { transform: translateY(0); opacity: 1; }
+  80% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(-60px); opacity: 0; }
+}
+
+.level-complete-banner {
+  animation: slide-down 2s ease-in-out forwards;
+}
+
+/* Input underline animation */
+@keyframes underline-grow {
+  from { width: 0; left: 50%; }
+  to { width: 100%; left: 0; }
+}
+
+/* ── Street Scene Animations ─────────────────────────────────────────────── */
+
+/* Neon entrance flicker (霓虹灯逐个亮起) */
+@keyframes neon-flicker-in {
+  0%   { opacity: 0; filter: brightness(0); }
+  12%  { opacity: 0.9; filter: brightness(3.5); }
+  22%  { opacity: 0.1; filter: brightness(0.2); }
+  38%  { opacity: 1;   filter: brightness(2.2); }
+  55%  { opacity: 0.4; filter: brightness(0.6); }
+  70%  { opacity: 1;   filter: brightness(1.6); }
+  85%  { opacity: 0.8; filter: brightness(1.1); }
+  100% { opacity: 1;   filter: brightness(1); }
+}
+
+/* Floating music notes */
+@keyframes float-note {
+  0%   { transform: translateY(0) rotate(-5deg) scale(1); opacity: 0; }
+  12%  { opacity: 0.85; }
+  50%  { transform: translateY(-38px) rotate(10deg) scale(1.1); opacity: 0.9; }
+  88%  { opacity: 0.5; }
+  100% { transform: translateY(-76px) rotate(-6deg) scale(0.75); opacity: 0; }
+}
+
+/* SVG dashed path travel animation */
+@keyframes path-dash {
+  from { stroke-dashoffset: 0; }
+  to   { stroke-dashoffset: -26; }
+}
+
+/* Building sign flicker loop */
+@keyframes sign-flicker {
+  0%, 88%, 100% { opacity: 1; }
+  89%  { opacity: 0.15; }
+  90%  { opacity: 1; }
+  93%  { opacity: 0.35; }
+  94%  { opacity: 1; }
+}
+
+.sign-flicker-anim {
+  animation: sign-flicker 7s linear infinite;
+}
+
+/* Star twinkle for sky background */
+@keyframes star-twinkle {
+  0%, 100% { opacity: 0.3; }
+  50%       { opacity: 1; }
+}
+
+/* ── VinylNode SVG ring glow pulse ─────────────────────────────────────────── */
+
+@keyframes svg-ring-cyan {
+  0%, 100% {
+    filter: drop-shadow(0 0 3px #00ffff80) drop-shadow(0 0 6px #00ffff40);
+  }
+  50% {
+    filter: drop-shadow(0 0 10px #00ffff) drop-shadow(0 0 22px #00ffff70) drop-shadow(0 0 40px #00ffff30);
+  }
+}
+
+@keyframes svg-ring-pink {
+  0%, 100% {
+    filter: drop-shadow(0 0 3px #ff00ff80) drop-shadow(0 0 6px #ff00ff40);
+  }
+  50% {
+    filter: drop-shadow(0 0 10px #ff00ff) drop-shadow(0 0 22px #ff00ff70) drop-shadow(0 0 40px #ff00ff30);
+  }
+}

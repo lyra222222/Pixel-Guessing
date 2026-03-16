@@ -1,0 +1,566 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'FZG_CN';
+  src: url('/assets/FZG_CN.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- Indie pixel palette (Celeste / Undertale / Stardew inspired) --- */
+:root {
+  --bg: #1a1a2e;
+  --surface: #252238;
+  --surface-hover: #2d2a44;
+  --primary: #67e8f9;
+  --primary-dim: #5eead4;
+  --accent: #f9a8d4;
+  --accent-warm: #fcd34d;
+  --text: #f5f5f4;
+  --text-muted: #94a3b8;
+  --border: rgba(255, 255, 255, 0.12);
+  --border-focus: rgba(103, 232, 249, 0.5);
+  /* Legacy aliases for compatibility */
+  --navy: var(--bg);
+  --neon-pink: var(--accent);
+  --neon-cyan: var(--primary);
+}
+
+html {
+  font-family: 'FZG_CN', monospace;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: none;
+  font-smoothing: none;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  max-width: 430px;
+  margin-left: auto;
+  margin-right: auto;
+  overflow-x: hidden;
+  line-height: 1.5;
+}
+
+#root {
+  min-height: 100dvh;
+}
+
+.font-pixel {
+  font-family: 'FZG_CN', monospace;
+}
+
+.page-bg {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100dvh;
+}
+
+/* --- Reusable pixel UI panel (clean, charming indie style) --- */
+.pixel-panel {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    0 1px 0 rgba(255, 255, 255, 0.06) inset;
+  padding: 1.25rem;
+}
+.pixel-panel-compact {
+  padding: 0.75rem 1rem;
+}
+
+/* --- Pixel buttons (charming indie style, consistent palette) --- */
+.btn-pixel {
+  font-family: 'FZG_CN', monospace;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  background: var(--surface);
+  color: var(--primary);
+  border: 3px solid var(--primary);
+  border-radius: 10px;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.25),
+    0 0 0 0 rgba(103, 232, 249, 0.2);
+  transition: box-shadow 0.2s ease, transform 0.1s ease, border-color 0.2s ease;
+}
+.btn-pixel:hover {
+  border-color: var(--primary-dim);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(103, 232, 249, 0.25);
+}
+.btn-pixel:active {
+  transform: scale(0.98);
+}
+
+.btn-pixel-pink {
+  color: var(--accent);
+  border-color: var(--accent);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.25),
+    0 0 0 0 rgba(249, 168, 212, 0.2);
+}
+.btn-pixel-pink:hover {
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(249, 168, 212, 0.3);
+}
+
+.btn-pixel-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  border-width: 2px;
+  border-radius: 8px;
+}
+.btn-pixel-sm.btn-pixel-pink {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+.btn-pixel-sm.btn-pixel-pink:hover {
+  box-shadow: 0 2px 12px rgba(249, 168, 212, 0.25);
+}
+
+.btn-pixel-amber {
+  color: var(--accent-warm);
+  border-color: var(--accent-warm);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+.btn-pixel-amber:hover {
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    0 0 16px rgba(252, 211, 77, 0.25);
+}
+
+.btn-pixel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* --- Hint power-up buttons (casual mobile game style, neon pixel) --- */
+.power-up-btn {
+  background: var(--bg);
+  cursor: pointer;
+}
+.power-up-btn:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.power-up-btn--standard {
+  border-color: var(--primary);
+  color: var(--primary);
+  box-shadow:
+    0 2px 10px rgba(0, 0, 0, 0.3),
+    0 0 12px rgba(103, 232, 249, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+.power-up-btn--standard:hover:not(:disabled) {
+  box-shadow:
+    0 4px 14px rgba(0, 0, 0, 0.35),
+    0 0 20px rgba(103, 232, 249, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.power-up-btn--premium {
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow:
+    0 2px 10px rgba(0, 0, 0, 0.3),
+    0 0 16px rgba(249, 168, 212, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+.power-up-btn--premium:hover:not(:disabled) {
+  box-shadow:
+    0 4px 14px rgba(0, 0, 0, 0.35),
+    0 0 24px rgba(249, 168, 212, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.power-up-btn--disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+  border-color: rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  background: var(--surface);
+}
+.power-up-btn--disabled .power-up-cost--disabled {
+  color: #f87171;
+}
+.power-up-btn--disabled .power-up-lock {
+  color: #f87171;
+}
+
+.power-up-main {
+  color: inherit;
+  text-shadow: 0 0 8px currentColor;
+}
+
+.power-up-cost {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.power-up-btn-pulse {
+  animation: power-up-pulse 0.35s ease-out forwards;
+}
+
+@keyframes power-up-pulse {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+.power-up-particle {
+  animation: power-up-particle-fade 0.4s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes power-up-particle-fade {
+  0% { opacity: 0.9; }
+  100% { opacity: 0; }
+}
+
+img {
+  referrerPolicy: no-referrer;
+}
+
+/* --- Correct Answer animation (pixel / retro arcade style) — 整体更明显 --- */
+/* 1. 卡片缩放更猛：1 → 1.25 → 0.96 → 1.05 → 1，回弹更明显 */
+@keyframes correct-card-pop {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.25);
+  }
+  52% {
+    transform: scale(0.96);
+  }
+  72% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* 2. 光晕更强：更粗描边 + 更大范围发光 + 双峰闪烁 */
+@keyframes correct-glow-pulse {
+  0% {
+    box-shadow: 0 0 0 6px #67e8f9, 0 0 20px rgba(103, 232, 249, 0.6), 0 0 48px rgba(103, 232, 249, 0.4);
+  }
+  35% {
+    box-shadow: 0 0 0 8px #67e8f9, 0 0 32px rgba(103, 232, 249, 0.8), 0 0 64px rgba(103, 232, 249, 0.5);
+  }
+  55% {
+    box-shadow: 0 0 0 6px #67e8f9, 0 0 24px rgba(103, 232, 249, 0.7), 0 0 56px rgba(103, 232, 249, 0.4);
+  }
+  75% {
+    box-shadow: 0 0 0 8px #67e8f9, 0 0 36px rgba(103, 232, 249, 0.8), 0 0 72px rgba(103, 232, 249, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 0 6px #67e8f9, 0 0 24px rgba(103, 232, 249, 0.6), 0 0 56px rgba(103, 232, 249, 0.4);
+  }
+}
+
+/* 3. 粒子更大、飞得更远、保持可见更久再消失 */
+@keyframes correct-particle-burst {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(calc(-50% + var(--tx, 0)), calc(-50% + var(--ty, 0))) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--tx, 0)), calc(-50% + var(--ty, 0))) scale(0.6);
+  }
+}
+
+/* 4. "Correct!" 更大、更亮、浮得更高、停留更久 */
+@keyframes correct-text-float {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.6);
+  }
+  15% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.25);
+  }
+  30% {
+    opacity: 1;
+    transform: translate(-50%, -55%) scale(1.15);
+  }
+  55% {
+    opacity: 1;
+    transform: translate(-50%, -75%) scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -120%) scale(1);
+  }
+}
+
+/* 动画类 — 时长略加长，整体更易察觉 */
+.correct-card-pop {
+  animation: correct-card-pop 0.85s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.correct-glow-outline {
+  animation: correct-glow-pulse 0.9s ease-in-out forwards;
+}
+
+.correct-particle {
+  animation: correct-particle-burst 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.correct-float-text {
+  animation: correct-text-float 0.9s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
+}
+
+/* --- Combo animation (retro pixel arcade, energetic) --- */
+/* Combo text: scale in quickly, bounce, glow — strength via .combo-glow-2 / 3 / 4+ */
+@keyframes combo-text-in {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.3);
+  }
+  25% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  45% {
+    transform: translate(-50%, -50%) scale(0.92);
+  }
+  65% {
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+  85% {
+    transform: translate(-50%, -50%) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes combo-glow-2 {
+  0%, 100% { text-shadow: 0 0 8px #67e8f9, 0 0 16px #67e8f9, 0 0 24px rgba(103,232,249,0.7); }
+  50% { text-shadow: 0 0 14px #67e8f9, 0 0 28px #67e8f9, 0 0 40px rgba(103,232,249,0.9); }
+}
+
+@keyframes combo-glow-3 {
+  0%, 100% { text-shadow: 0 0 12px #fcd34d, 0 0 24px #fcd34d, 0 0 36px rgba(252,211,77,0.8); }
+  50% { text-shadow: 0 0 20px #fcd34d, 0 0 40px #fcd34d, 0 0 56px rgba(252,211,77,0.9); }
+}
+
+@keyframes combo-glow-4 {
+  0%, 100% { text-shadow: 0 0 16px #f9a8d4, 0 0 32px #f9a8d4, 0 0 48px rgba(249,168,212,0.8); }
+  50% { text-shadow: 0 0 28px #f9a8d4, 0 0 56px #f9a8d4, 0 0 72px rgba(249,168,212,0.9); }
+}
+
+.combo-text-enter {
+  animation: combo-text-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.combo-glow-2 { color: #67e8f9; animation: combo-glow-2 0.6s ease-in-out 2 forwards; }
+.combo-glow-3 { color: #fcd34d; animation: combo-glow-3 0.6s ease-in-out 2 forwards; }
+.combo-glow-4 { color: #f9a8d4; animation: combo-glow-4 0.6s ease-in-out 2 forwards; }
+
+/* Combo particles: burst from center, same as correct but centered on screen */
+@keyframes combo-particle-burst {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.3);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(calc(-50% + var(--tx, 0)), calc(-50% + var(--ty, 0))) scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--tx, 0)), calc(-50% + var(--ty, 0))) scale(0.5);
+  }
+}
+
+.combo-particle {
+  animation: combo-particle-burst 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* --- Wrong Answer feedback (pixel UI, ~0.4s, clear but not harsh) --- */
+@keyframes wrong-shake {
+  0%, 100% { transform: translateX(0); }
+  12% { transform: translateX(-8px); }
+  28% { transform: translateX(8px); }
+  44% { transform: translateX(-5px); }
+  60% { transform: translateX(5px); }
+  76% { transform: translateX(-2px); }
+  92% { transform: translateX(2px); }
+}
+
+@keyframes wrong-outline-flash {
+  0%, 100% {
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0);
+  }
+  15% {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.9), 0 0 12px rgba(239, 68, 68, 0.4);
+  }
+  40% {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.5), 0 0 8px rgba(239, 68, 68, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0);
+  }
+}
+
+@keyframes wrong-oops-fade {
+  0% { opacity: 0; transform: translateY(4px); }
+  20% { opacity: 1; transform: translateY(0); }
+  80% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-4px); }
+}
+
+.wrong-feedback-shake {
+  animation: wrong-shake 0.4s ease-in-out forwards;
+}
+
+.wrong-feedback-outline {
+  animation: wrong-outline-flash 0.4s ease-out forwards;
+}
+
+.wrong-feedback-oops {
+  animation: wrong-oops-fade 0.4s ease-out forwards;
+}
+
+/* 答错时：整屏抖动 + 图片框变红 */
+.wrong-screen-shake {
+  animation: level-complete-screen-shake 0.4s ease-in-out forwards;
+}
+
+@keyframes wrong-card-red {
+  0% {
+    border-color: var(--primary);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), 0 1px 0 rgba(255, 255, 255, 0.06) inset;
+  }
+  20% {
+    border-color: #f87171;
+    box-shadow: 0 0 20px rgba(248, 113, 113, 0.6), 0 4px 16px rgba(0, 0, 0, 0.3);
+  }
+  100% {
+    border-color: #f87171;
+    box-shadow: 0 0 14px rgba(248, 113, 113, 0.4), 0 4px 16px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.wrong-feedback-card {
+  animation: wrong-card-red 0.4s ease-out forwards;
+}
+
+/* --- Level Complete celebration (~2s, pixel festive arcade) --- */
+@keyframes level-complete-screen-shake {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-3px, 2px); }
+  20% { transform: translate(3px, -2px); }
+  30% { transform: translate(-2px, 1px); }
+  40% { transform: translate(2px, -1px); }
+  50% { transform: translate(-1px, 0); }
+  60% { transform: translate(1px, 0); }
+  70% { transform: translate(-1px, 0); }
+  80% { transform: translate(1px, 0); }
+  90% { transform: translate(0, 0); }
+}
+
+@keyframes level-complete-banner-in {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.4);
+  }
+  25% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.15);
+  }
+  45% {
+    transform: translate(-50%, -50%) scale(0.92);
+  }
+  65% {
+    transform: translate(-50%, -50%) scale(1.04);
+  }
+  85% {
+    transform: translate(-50%, -50%) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes level-complete-banner-glow {
+  0%, 100% {
+    text-shadow: 0 0 16px #ffd700, 0 0 32px rgba(255, 215, 0, 0.6), 0 0 48px rgba(255, 215, 0, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 24px #ffd700, 0 0 48px rgba(255, 215, 0, 0.9), 0 0 64px rgba(255, 215, 0, 0.5);
+  }
+}
+
+/* Confetti: burst out, rotate, fade */
+@keyframes level-complete-confetti {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--tx, 0)), calc(-50% + var(--ty, 0))) scale(0.3) rotate(var(--rot, 360deg));
+  }
+}
+
+/* Sparkles / notes: float and fade */
+@keyframes level-complete-float {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  70% {
+    opacity: 0.9;
+    transform: translate(calc(-50% + var(--tx, 0)), calc(-50% + var(--ty, 0))) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--tx, 0)), calc(-50% + var(--ty, 0))) scale(0.5);
+  }
+}
+
+.level-complete-shake {
+  animation: level-complete-screen-shake 0.5s ease-in-out forwards;
+}
+
+.level-complete-banner {
+  animation: level-complete-banner-in 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.level-complete-banner-glow {
+  animation: level-complete-banner-glow 1.8s ease-in-out 2 forwards;
+}
+
+.level-complete-confetti {
+  animation: level-complete-confetti 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.level-complete-float {
+  animation: level-complete-float 1.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}

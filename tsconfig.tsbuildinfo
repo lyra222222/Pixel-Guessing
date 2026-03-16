@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/data/levels.ts","./src/data/shopitems.ts","./src/hooks/usegamestate.ts","./src/pages/collection.tsx","./src/pages/home.tsx","./src/pages/levelmap.tsx","./src/pages/quiz.tsx","./src/store/gamestore.ts","./src/utils/levelmappath.ts"],"version":"5.6.3"}
