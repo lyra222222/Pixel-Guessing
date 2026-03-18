@@ -14,6 +14,16 @@ import {
 
 const CORRECT_DELAY_MS = 2000
 
+function normalizeAnswer(s: string): string {
+  return s.trim().toLowerCase().replace(/\s+/g, '')
+}
+
+function isLevelAnswerCorrect(level: { answer: string; alternateAnswers?: string[] }, input: string): boolean {
+  const n = normalizeAnswer(input)
+  const candidates = [level.answer, ...(level.alternateAnswers ?? [])]
+  return candidates.some((a) => normalizeAnswer(a) === n)
+}
+
 const CORRECT_PARTICLE_COLORS = [
   '#00f5ff',
   '#ff6ec7',
@@ -156,9 +166,7 @@ export default function Quiz() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!level || !levelId) return
-    const normalized = input.trim().toLowerCase().replace(/\s+/g, '')
-    const answerNorm = level.answer.toLowerCase().replace(/\s+/g, '')
-    if (normalized !== answerNorm) {
+    if (!isLevelAnswerCorrect(level, input)) {
       setFeedback('wrong')
       setComboCount(0)
       setWrongAnimTrigger((t) => t + 1)
@@ -418,6 +426,16 @@ export default function Quiz() {
               className="h-48 w-48 object-cover md:h-64 md:w-64"
             />
           </motion.div>
+        </div>
+
+        {/* 歌曲固定信息：字数 + 类型（不消耗积分） */}
+        <div className="mb-3 flex flex-wrap justify-center gap-2 font-pixel text-sm">
+          <span className="rounded border border-neonCyan/60 px-2 py-0.5 text-neonCyan/80">
+            字数：{level.length}
+          </span>
+          <span className="rounded border border-neonPink/60 px-2 py-0.5 text-neonPink/80">
+            类型：{level.language}
+          </span>
         </div>
 
         {/* 已购买的提示展示 */}
