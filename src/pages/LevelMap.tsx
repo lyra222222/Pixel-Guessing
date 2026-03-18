@@ -20,7 +20,7 @@ function PixelCircleNode({
   levelId: string
   status: NodeStatus
   index: number
-  point: { x: number; y: number }
+  point: { x: number; y: number; unit: 'ratio' | 'px' }
 }) {
   const navigate = useNavigate()
   const [particles, setParticles] = useState<{ id: number; x: number; y: number }[]>([])
@@ -48,14 +48,15 @@ function PixelCircleNode({
   const neonCyan = '#00f5ff'
   const neonGreen = '#39ff14'
   const neonPink = '#ff6ec7'
+  const isPixelPoint = point.unit === 'px'
 
   return (
     <motion.div
       className="absolute flex items-center justify-center"
       style={{
-        left: `${point.x * 100}%`,
-        top: `${point.y * 100}%`,
-        transform: 'translate(-50%, -50%)',
+        left: isPixelPoint ? `${point.x}px` : `${point.x * 100}%`,
+        top: isPixelPoint ? `${point.y}px` : `${point.y * 100}%`,
+        transform: isPixelPoint ? 'none' : 'translate(-50%, -50%)',
         width: 72,
         height: 72,
       }}
@@ -234,11 +235,36 @@ function PixelCircleNode({
 export default function LevelMap() {
   const navigate = useNavigate()
   const { unlockedLevelIds, completedLevelIds, score, levelNodePositions } = useGameState()
-  const defaultPoints = useMemo(() => getLevelPathPoints(LEVELS.length), [])
+  const pixelOverrides = useMemo(() => {
+    const overrides: Record<string, { x: number; y: number; unit: 'px' }> = {
+      '1': { x: 115, y: 577, unit: 'px' },
+      '2': { x: 85, y: 517, unit: 'px' },
+      '3': { x: 147, y: 473, unit: 'px' },
+      '4': { x: 124, y: 400, unit: 'px' },
+      '5': { x: 193, y: 352, unit: 'px' },
+      '6': { x: 257, y: 313, unit: 'px' },
+      '7': { x: 278, y: 246, unit: 'px' },
+      '8': { x: 347, y: 197, unit: 'px' },
+      '9': { x: 288, y: 153, unit: 'px' },
+      '10': { x: 248, y: 85, unit: 'px' },
+    }
+    return overrides
+  }, [])
+  const defaultPoints = useMemo(() => {
+    const ratioPoints = getLevelPathPoints(LEVELS.length).map((p) => ({ ...p, unit: 'ratio' as const }))
+
+    return LEVELS.map((level, idx) => pixelOverrides[level.id] ?? ratioPoints[idx])
+  }, [pixelOverrides])
   const pathPoints = useMemo(
     () =>
-      LEVELS.map((level, index) => levelNodePositions[level.id] ?? defaultPoints[index]),
-    [defaultPoints, levelNodePositions]
+      LEVELS.map((level, index) => {
+        const override = pixelOverrides[level.id]
+        if (override) return override
+        const saved = levelNodePositions[level.id]
+        if (saved) return { ...saved, unit: 'ratio' as const }
+        return defaultPoints[index]
+      }),
+    [defaultPoints, levelNodePositions, pixelOverrides]
   )
 
   const handleReset = () => {

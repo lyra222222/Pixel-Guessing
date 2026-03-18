@@ -1,7 +1,8 @@
 import { LEVELS } from '@/data/levels'
 import { getLevelPathPoints } from '@/utils/levelMapPath'
 
-const STORAGE_KEY = 'pixel-guess-state'
+const STORAGE_KEY = 'pixel-guess-state-v2'
+const LEGACY_STORAGE_KEYS = ['pixel-guess-state']
 const LEVEL_ORDER = LEVELS.map((l) => l.id)
 
 export interface GameState {
@@ -39,7 +40,17 @@ const defaultState: GameState = {
 function loadState(): GameState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return { ...defaultState }
+    if (!raw) {
+      // Invalidate any older persisted state to avoid stale layouts/progress.
+      for (const key of LEGACY_STORAGE_KEYS) {
+        try {
+          localStorage.removeItem(key)
+        } catch {
+          // ignore
+        }
+      }
+      return { ...defaultState }
+    }
     const parsed = JSON.parse(raw) as Partial<GameState>
     return {
       unlockedLevelIds: parsed.unlockedLevelIds ?? defaultState.unlockedLevelIds,
