@@ -1,11 +1,12 @@
-import { useState, useMemo } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Home, Lock } from 'lucide-react'
 import { PixelPanel } from '@/components/PixelPanel'
-import { useGameState } from '@/hooks/useGameState'
+import { useCurrentProgress, useGameState } from '@/hooks/useGameState'
 import { resetProgress } from '@/store/gameStore'
-import { LEVELS } from '@/data/levels'
+import { getCopy } from '@/data/copy'
+import { getLevelsForLanguage } from '@/data/levels'
 import { getLevelPathPoints } from '@/utils/levelMapPath'
 
 type NodeStatus = 'locked' | 'unlocked' | 'completed'
@@ -234,7 +235,15 @@ function PixelCircleNode({
 
 export default function LevelMap() {
   const navigate = useNavigate()
-  const { unlockedLevelIds, completedLevelIds, score, levelNodePositions } = useGameState()
+  const { currentLanguage } = useGameState()
+  const { unlockedLevelIds, completedLevelIds, score, levelNodePositions } = useCurrentProgress()
+  const copy = getCopy(currentLanguage)
+  const levels = useMemo(() => getLevelsForLanguage(currentLanguage), [currentLanguage])
+
+  useEffect(() => {
+    if (!currentLanguage) navigate('/')
+  }, [currentLanguage, navigate])
+
   const pixelOverrides = useMemo(() => {
     const overrides: Record<string, { x: number; y: number; unit: 'px' }> = {
       '1': { x: 115, y: 577, unit: 'px' },
@@ -251,20 +260,20 @@ export default function LevelMap() {
     return overrides
   }, [])
   const defaultPoints = useMemo(() => {
-    const ratioPoints = getLevelPathPoints(LEVELS.length).map((p) => ({ ...p, unit: 'ratio' as const }))
+    const ratioPoints = getLevelPathPoints(levels.length).map((p) => ({ ...p, unit: 'ratio' as const }))
 
-    return LEVELS.map((level, idx) => pixelOverrides[level.id] ?? ratioPoints[idx])
-  }, [pixelOverrides])
+    return levels.map((level, idx) => pixelOverrides[level.id] ?? ratioPoints[idx])
+  }, [levels, pixelOverrides])
   const pathPoints = useMemo(
     () =>
-      LEVELS.map((level, index) => {
+      levels.map((level, index) => {
         const override = pixelOverrides[level.id]
         if (override) return override
         const saved = levelNodePositions[level.id]
         if (saved) return { ...saved, unit: 'ratio' as const }
         return defaultPoints[index]
       }),
-    [defaultPoints, levelNodePositions, pixelOverrides]
+    [defaultPoints, levelNodePositions, levels, pixelOverrides]
   )
 
   const handleReset = () => {
@@ -288,7 +297,7 @@ export default function LevelMap() {
         <PixelPanel compact>
           <div className="flex items-center justify-between gap-2">
             <span className="font-pixel text-lg text-neonCyan">
-              积分：<strong>{score}</strong>
+              {copy.score}{copy.separator}<strong>{score}</strong>
             </span>
             <div className="flex gap-2">
               <button
@@ -296,11 +305,11 @@ export default function LevelMap() {
                 onClick={handleReset}
                 className="btn-pixel btn-pixel-amber btn-pixel-sm"
               >
-                重新开始
+                {copy.restart}
               </button>
               <Link to="/" className="btn-pixel btn-pixel-sm">
                 <Home className="h-5 w-5 flex-shrink-0" />
-                返回首页
+                {copy.backHome}
               </Link>
             </div>
           </div>
@@ -313,7 +322,7 @@ export default function LevelMap() {
           className="relative h-full w-full"
           style={{ minHeight: 'calc(100dvh - 56px)' }}
         >
-          {LEVELS.map((level, index) => (
+          {levels.map((level, index) => (
             <PixelCircleNode
               key={level.id}
               levelId={level.id}

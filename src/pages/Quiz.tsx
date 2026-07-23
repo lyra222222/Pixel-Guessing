@@ -3,19 +3,40 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, Mic, Type } from 'lucide-react'
 import { HintPowerUpButton } from '@/components/HintPowerUpButton'
-import { LEVELS } from '@/data/levels'
-import { useGameState } from '@/hooks/useGameState'
+import { getCopy } from '@/data/copy'
+import { getLevelsForLanguage } from '@/data/levels'
+import { useCurrentProgress, useGameState } from '@/hooks/useGameState'
 import {
   completeLevel,
+  getCurrentProgress,
   unlockNextLevel,
   purchaseHint,
-  getState,
 } from '@/store/gameStore'
 
 const CORRECT_DELAY_MS = 2000
 
+const TRADITIONAL_TO_SIMPLIFIED: Record<string, string> = {
+  闊: '阔',
+  記: '记',
+  憶: '忆',
+  綿: '绵',
+  裡: '里',
+  櫻: '樱',
+  樹: '树',
+  時: '时',
+  隱: '隐',
+  遊: '游',
+  樂: '乐',
+  場: '场',
+  風: '风',
+}
+
+function normalizeChineseVariants(s: string): string {
+  return Array.from(s, (char) => TRADITIONAL_TO_SIMPLIFIED[char] ?? char).join('')
+}
+
 function normalizeAnswer(s: string): string {
-  return s.trim().toLowerCase().replace(/\s+/g, '')
+  return normalizeChineseVariants(s.trim().toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ''))
 }
 
 function isLevelAnswerCorrect(level: { answer: string; alternateAnswers?: string[] }, input: string): boolean {
@@ -130,7 +151,10 @@ export function playCorrectAnimation(
 export default function Quiz() {
   const { levelId } = useParams<{ levelId: string }>()
   const navigate = useNavigate()
-  const state = useGameState()
+  const { currentLanguage } = useGameState()
+  const state = useCurrentProgress()
+  const copy = getCopy(currentLanguage)
+  const levels = getLevelsForLanguage(currentLanguage)
   const [input, setInput] = useState('')
   const [feedback, setFeedback] = useState<'correct' | 'wrong' | null>(null)
   const [showAllDone, setShowAllDone] = useState(false)
@@ -152,16 +176,20 @@ export default function Quiz() {
     )
   }, [])
 
-  const level = LEVELS.find((l) => l.id === levelId)
-  const currentIndex = levelId ? LEVELS.findIndex((l) => l.id === levelId) : -1
-  const isLastLevel = currentIndex >= 0 && currentIndex === LEVELS.length - 1
+  const level = levels.find((l) => l.id === levelId)
+  const currentIndex = levelId ? levels.findIndex((l) => l.id === levelId) : -1
+  const isLastLevel = currentIndex >= 0 && currentIndex === levels.length - 1
   const hints = levelId ? state.purchasedHints[levelId] ?? {} : {}
 
   useEffect(() => {
+    if (!currentLanguage) {
+      navigate('/')
+      return
+    }
     if (!level) return
     setInput('')
     setFeedback(null)
-  }, [levelId])
+  }, [currentLanguage, level, levelId, navigate])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -231,18 +259,18 @@ export default function Quiz() {
     if (isLastLevel) {
       setTimeout(() => setShowAllDone(true), CORRECT_DELAY_MS)
     } else {
-      const next = LEVELS[currentIndex + 1]
+      const next = levels[currentIndex + 1]
       setTimeout(() => navigate(`/quiz/${next.id}`), CORRECT_DELAY_MS)
     }
   }
 
   const buyArtist = () => {
-    if (levelId && getState().score >= 5 && !hints.artist) {
+    if (levelId && getCurrentProgress().score >= 5 && !hints.artist) {
       purchaseHint(levelId, 'artist')
     }
   }
   const buyFirstChar = () => {
-    if (levelId && getState().score >= 10 && !hints.firstChar) {
+    if (levelId && getCurrentProgress().score >= 10 && !hints.firstChar) {
       purchaseHint(levelId, 'firstChar')
     }
   }
@@ -251,9 +279,9 @@ export default function Quiz() {
     return (
       <div className="flex min-h-dvh items-center justify-center bg-navy p-4">
         <div className="text-center text-white">
-          <p className="font-pixel mb-4">关卡不存在</p>
+          <p className="font-pixel mb-4">{copy.levelMissing}</p>
           <Link to="/levels" className="btn-pixel">
-            返回关卡
+            {copy.backLevels}
           </Link>
         </div>
       </div>
@@ -368,16 +396,16 @@ export default function Quiz() {
 
       <div className="flex items-center justify-between px-4 py-3">
         <span className="font-pixel text-lg text-neonCyan">
-          积分：<strong>{state.score}</strong>
+          {copy.score}{copy.separator}<strong>{state.score}</strong>
         </span>
         <Link to="/levels" className="btn-pixel btn-pixel-sm">
           <ArrowLeft className="h-5 w-5 flex-shrink-0" />
-          返回关卡
+          {copy.backLevels}
         </Link>
       </div>
 
       <div className="flex flex-1 flex-col items-center px-4 pb-8">
-        <p className="font-pixel mb-2 text-neonCyan">第 {level.id} 关</p>
+        <p className="font-pixel mb-2 text-neonCyan">{copy.levelLabel(level.id)}</p>
 
         <div className="relative mb-5 inline-block">
           {/* Floating "Correct!" text above the card */}
@@ -422,7 +450,7 @@ export default function Quiz() {
           >
             <img
               src={level.imageUrl}
-              alt="猜歌图"
+              alt={copy.songImageAlt}
               className="h-48 w-48 object-cover md:h-64 md:w-64"
             />
           </motion.div>
@@ -431,10 +459,10 @@ export default function Quiz() {
         {/* 歌曲固定信息：字数 + 类型（不消耗积分） */}
         <div className="mb-3 flex flex-wrap justify-center gap-2 font-pixel text-sm">
           <span className="rounded border border-neonCyan/60 px-2 py-0.5 text-neonCyan/80">
-            字数：{level.length}
+            {copy.length}{copy.separator}{level.length}
           </span>
           <span className="rounded border border-neonPink/60 px-2 py-0.5 text-neonPink/80">
-            类型：{level.language}
+            {copy.type}{copy.separator}{level.language}
           </span>
         </div>
 
@@ -442,12 +470,12 @@ export default function Quiz() {
         <div className="mb-3 flex flex-wrap justify-center gap-2 font-pixel text-sm">
           {hints.artist && (
             <span className="rounded border border-neonCyan px-2 py-0.5 text-neonCyan">
-              歌手：{level.artist}
+              {copy.artist}{copy.separator}{level.artist}
             </span>
           )}
           {hints.firstChar && (
             <span className="rounded border border-neonPink px-2 py-0.5 text-neonPink">
-              首字：{firstChar}
+              {copy.firstChar}{copy.separator}{firstChar}
             </span>
           )}
         </div>
@@ -458,12 +486,12 @@ export default function Quiz() {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="输入歌名"
+            placeholder={copy.songInputPlaceholder}
             className={`font-pixel w-full rounded-lg border-2 border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-[var(--text)] placeholder-text-muted focus:border-[var(--border-focus)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30 ${wrongAnimTrigger > 0 ? 'wrong-feedback-shake wrong-feedback-outline' : ''}`}
             autoComplete="off"
           />
           <button type="submit" className="btn-pixel w-full">
-            提交答案
+            {copy.submitAnswer}
           </button>
         </form>
 
@@ -471,8 +499,8 @@ export default function Quiz() {
         <div className="flex flex-wrap justify-center gap-3">
           {!hints.artist && (
             <HintPowerUpButton
-              mainLabel="提示歌手"
-              costLabel="消耗 5 积分"
+              mainLabel={copy.hintArtist}
+              costLabel={copy.cost(5)}
               icon={<Mic className="h-4 w-4 flex-shrink-0" />}
               disabled={state.score < 5}
               onClick={buyArtist}
@@ -481,8 +509,8 @@ export default function Quiz() {
           )}
           {!hints.firstChar && (
             <HintPowerUpButton
-              mainLabel="首字提示"
-              costLabel="消耗 10 积分"
+              mainLabel={copy.firstCharHint}
+              costLabel={copy.cost(10)}
               icon={<Type className="h-4 w-4 flex-shrink-0" />}
               disabled={state.score < 10}
               onClick={buyFirstChar}
@@ -514,7 +542,7 @@ export default function Quiz() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0 }}
             >
-              回答正确！+10 积分
+              {copy.correctFeedback}
             </motion.p>
           )}
           {feedback === 'wrong' && (
@@ -524,7 +552,7 @@ export default function Quiz() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              答案不对，再试试
+              {copy.wrongFeedback}
             </motion.p>
           )}
         </AnimatePresence>
@@ -549,8 +577,8 @@ export default function Quiz() {
               exit={{ scale: 0.8 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <h2 className="font-pixel mb-4 text-2xl text-neonPink">全关卡达成！</h2>
-              <p className="font-pixel text-neonCyan mb-6">恭喜你通关全部关卡</p>
+              <h2 className="font-pixel mb-4 text-2xl text-neonPink">{copy.allDoneTitle}</h2>
+              <p className="font-pixel text-neonCyan mb-6">{copy.allDoneMessage}</p>
               <button
                 type="button"
                 className="btn-pixel btn-pixel-pink"
@@ -559,7 +587,7 @@ export default function Quiz() {
                   navigate('/')
                 }}
               >
-                返回首页
+                {copy.backHome}
               </button>
             </motion.div>
           </motion.div>
