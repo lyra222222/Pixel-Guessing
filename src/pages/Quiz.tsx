@@ -167,6 +167,7 @@ export default function Quiz() {
   const [wrongAnimTrigger, setWrongAnimTrigger] = useState(0)
   const [showLevelComplete, setShowLevelComplete] = useState(false)
   const [levelCompleteParticles, setLevelCompleteParticles] = useState<LevelCompleteParticle[]>([])
+  const [isImageZoomed, setIsImageZoomed] = useState(false)
 
   const playCorrect = useCallback(() => {
     playCorrectAnimation(
@@ -189,7 +190,21 @@ export default function Quiz() {
     if (!level) return
     setInput('')
     setFeedback(null)
+    setIsImageZoomed(false)
   }, [currentLanguage, level, levelId, navigate])
+
+  useEffect(() => {
+    if (!isImageZoomed) return
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsImageZoomed(false)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isImageZoomed])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -442,18 +457,21 @@ export default function Quiz() {
               </span>
             )
           })}
-          <motion.div
-            className={`overflow-hidden rounded-xl border-4 border-[var(--primary)] shadow-panel ${correctAnimTrigger > 0 ? 'correct-card-pop correct-glow-outline' : ''} ${wrongAnimTrigger > 0 ? 'wrong-feedback-card' : ''}`}
+          <motion.button
+            type="button"
+            aria-label={copy.songImageAlt}
+            className={`overflow-hidden rounded-xl border-4 border-[var(--primary)] shadow-panel focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/60 ${correctAnimTrigger > 0 ? 'correct-card-pop correct-glow-outline' : ''} ${wrongAnimTrigger > 0 ? 'wrong-feedback-card' : ''}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             style={{ position: 'relative', zIndex: 5 }}
+            onClick={() => setIsImageZoomed(true)}
           >
             <img
               src={level.imageUrl}
               alt={copy.songImageAlt}
-              className="h-48 w-48 object-cover md:h-64 md:w-64"
+              className="h-72 w-72 object-cover md:h-96 md:w-96"
             />
-          </motion.div>
+          </motion.button>
         </div>
 
         {/* 歌曲固定信息：字数 + 类型（不消耗积分） */}
@@ -557,6 +575,28 @@ export default function Quiz() {
           )}
         </AnimatePresence>
       </div>
+
+      <AnimatePresence>
+        {isImageZoomed && (
+          <motion.div
+            className="fixed inset-0 z-40 flex items-center justify-center bg-black/80 p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsImageZoomed(false)}
+          >
+            <motion.img
+              src={level.imageUrl}
+              alt={copy.songImageAlt}
+              className="max-h-[82dvh] max-w-[92vw] rounded-xl border-4 border-[var(--primary)] object-contain shadow-[0_0_24px_rgba(103,232,249,0.45)]"
+              initial={{ scale: 0.92 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.92 }}
+              onClick={(e) => e.stopPropagation()}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {showAllDone && (
