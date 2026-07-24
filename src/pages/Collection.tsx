@@ -1,26 +1,23 @@
-import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Home, Store, LayoutGrid } from 'lucide-react'
 import { PixelPanel } from '@/components/PixelPanel'
 import { useCurrentProgress, useGameState } from '@/hooks/useGameState'
 import { getCopy } from '@/data/copy'
+import { DEFAULT_LANGUAGE } from '@/data/levels'
 import { getLocalizedShopItem, SHOP_ITEMS } from '@/data/shopItems'
 import { purchaseShopItem } from '@/store/gameStore'
 
 type Tab = 'shop' | 'mine'
 
 export default function Collection() {
-  const navigate = useNavigate()
   const [tab, setTab] = useState<Tab>('shop')
   const { currentLanguage } = useGameState()
   const { score, purchasedShopIds } = useCurrentProgress()
-  const copy = getCopy(currentLanguage)
+  const activeLanguage = currentLanguage ?? DEFAULT_LANGUAGE
+  const copy = getCopy(activeLanguage)
   const myItems = SHOP_ITEMS.filter((item) => purchasedShopIds.includes(item.id))
-
-  useEffect(() => {
-    if (!currentLanguage) navigate('/')
-  }, [currentLanguage, navigate])
 
   return (
     <div className="min-h-dvh bg-navy">
@@ -78,7 +75,7 @@ export default function Collection() {
                 animate={{ opacity: 1 }}
               >
                 {SHOP_ITEMS.map((item) => {
-                  const localizedItem = getLocalizedShopItem(item, currentLanguage)
+                  const localizedItem = getLocalizedShopItem(item, activeLanguage)
                   const owned = purchasedShopIds.includes(item.id)
                   const canBuy = score >= item.price && !owned
                   return (
@@ -127,7 +124,7 @@ export default function Collection() {
                 ) : (
                   <div className="grid w-full grid-cols-2 gap-4">
                     {myItems.map((item) => {
-                      const localizedItem = getLocalizedShopItem(item, currentLanguage)
+                      const localizedItem = getLocalizedShopItem(item, activeLanguage)
 
                       return (
                         <PixelPanel key={item.id} compact className="flex flex-col items-center">
