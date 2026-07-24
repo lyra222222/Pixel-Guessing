@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Navigate, Routes, Route } from 'react-router-dom'
 import Home from '@/pages/Home'
 import LevelMap from '@/pages/LevelMap'
 import Quiz from '@/pages/Quiz'
@@ -22,6 +22,7 @@ export default function App() {
       <Route path="/quiz/:levelId" element={<Quiz />} />
       <Route path="/collection" element={<Collection />} />
       <Route path="/settings" element={<Settings />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )
 }

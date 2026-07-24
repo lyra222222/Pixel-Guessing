@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Home, Lock } from 'lucide-react'
@@ -6,7 +6,7 @@ import { PixelPanel } from '@/components/PixelPanel'
 import { useCurrentProgress, useGameState } from '@/hooks/useGameState'
 import { resetProgress } from '@/store/gameStore'
 import { getCopy } from '@/data/copy'
-import { getLevelsForLanguage } from '@/data/levels'
+import { DEFAULT_LANGUAGE, getLevelsForLanguage } from '@/data/levels'
 import { getLevelPathPoints } from '@/utils/levelMapPath'
 
 type NodeStatus = 'locked' | 'unlocked' | 'completed'
@@ -237,12 +237,9 @@ export default function LevelMap() {
   const navigate = useNavigate()
   const { currentLanguage } = useGameState()
   const { unlockedLevelIds, completedLevelIds, score, levelNodePositions } = useCurrentProgress()
-  const copy = getCopy(currentLanguage)
-  const levels = useMemo(() => getLevelsForLanguage(currentLanguage), [currentLanguage])
-
-  useEffect(() => {
-    if (!currentLanguage) navigate('/')
-  }, [currentLanguage, navigate])
+  const activeLanguage = currentLanguage ?? DEFAULT_LANGUAGE
+  const copy = getCopy(activeLanguage)
+  const levels = useMemo(() => getLevelsForLanguage(activeLanguage), [activeLanguage])
 
   const pixelOverrides = useMemo(() => {
     const overrides: Record<string, { x: number; y: number; unit: 'px' }> = {

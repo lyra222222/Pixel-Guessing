@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, Mic, Type } from 'lucide-react'
 import { HintPowerUpButton } from '@/components/HintPowerUpButton'
 import { getCopy } from '@/data/copy'
-import { getLevelsForLanguage } from '@/data/levels'
+import { DEFAULT_LANGUAGE, getLevelsForLanguage } from '@/data/levels'
 import { useCurrentProgress, useGameState } from '@/hooks/useGameState'
 import {
   completeLevel,
@@ -153,8 +153,9 @@ export default function Quiz() {
   const navigate = useNavigate()
   const { currentLanguage } = useGameState()
   const state = useCurrentProgress()
-  const copy = getCopy(currentLanguage)
-  const levels = getLevelsForLanguage(currentLanguage)
+  const activeLanguage = currentLanguage ?? DEFAULT_LANGUAGE
+  const copy = getCopy(activeLanguage)
+  const levels = getLevelsForLanguage(activeLanguage)
   const [input, setInput] = useState('')
   const [feedback, setFeedback] = useState<'correct' | 'wrong' | null>(null)
   const [showAllDone, setShowAllDone] = useState(false)
@@ -183,15 +184,11 @@ export default function Quiz() {
   const hints = levelId ? state.purchasedHints[levelId] ?? {} : {}
 
   useEffect(() => {
-    if (!currentLanguage) {
-      navigate('/')
-      return
-    }
     if (!level) return
     setInput('')
     setFeedback(null)
     setIsImageZoomed(false)
-  }, [currentLanguage, level, levelId, navigate])
+  }, [level, levelId])
 
   useEffect(() => {
     if (!isImageZoomed) return
